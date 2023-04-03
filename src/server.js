@@ -1,16 +1,20 @@
 import http from 'node:http'
-import {} from './middlewares/json.js'
+import { json } from './middlewares/json.js'
+import fs from 'node:fs/promises'
 
 const port = 3333
+
+const databasePath = new URL('../db.json', import.meta.url)
 
 const server = http.createServer( async (req, res) => {
   
   await json(req, res)
 
-  res.statusCode = 200
-  res.end('Hello World')
+  if (req.method === "GET") {
+    const tasks = await fs.readFile(databasePath, 'utf-8')
+    res.statusCode = 200
+    return res.end(tasks)
+  }
 })
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
-})
+server.listen(port)
