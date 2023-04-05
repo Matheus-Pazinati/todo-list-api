@@ -62,6 +62,7 @@ export class Database {
       if (description) {
         updatedTask.description = description
       }
+      updatedTask.updated_at = new Date()
 
       this.#persist()
     }
