@@ -44,7 +44,7 @@ export const routes = [
         database.delete('tasks', id)
         return res.writeHead(204).end()
       } else {
-        return res.writeHead(404).end()
+        return res.writeHead(404).end("Tarefa não encontrada")
       }
 
     }
@@ -54,11 +54,16 @@ export const routes = [
     path: buildRoutePath("/tasks/:id"),
     handler: (req, res) => {
       const { id } = req.params
-      if (req.body) {
-        database.update('tasks', id, req.body)
-        return res.writeHead(201).end()
+      const hasThisTaskOnDatabase = database.hasTask('tasks', id)
+      if (hasThisTaskOnDatabase) {
+        if (req.body.description || req.body.title) {
+          database.update('tasks', id, req.body)
+          return res.writeHead(201).end()
+        } else {
+          return res.writeHead(422).end(JSON.stringify("Os dados ou parâmetros para atualizar a tarefa estão incorretos"))
+        }
       } else {
-        return res.writeHead(422).end()
+        return res.writeHead(404).end(JSON.stringify("Os dados ou parâmetros para atualizar a tarefa estão incorretos"))
       }
     }
   }
